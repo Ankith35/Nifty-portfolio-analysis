@@ -2,7 +2,7 @@
 ### By Ankith K | Data Analyst | BFSI Domain Expert
 
 ## What this project does
-Analyses 8 NSE stocks vs NIFTY 50 benchmark
+Analyses 7 NSE stocks vs NIFTY 50 benchmark
 for FY 2025-26 using real market data.
 
 ## Results
