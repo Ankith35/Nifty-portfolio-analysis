@@ -1,5 +1,5 @@
 # ----- Nifty_Portfolio_Analysis -----
-# From date 01 st april 2025 to 18 march 2026
+# From date 01 st april 2025 to 18 jun 2026
 #    STEP 1: Import tools
 
 import yfinance as yf     #fetches stock data
@@ -19,15 +19,23 @@ MY_STOCKS = {
     "PGEL.NS"  : "PG ELECTROPLAST LIMITED",
     "NETWEB.NS":  "NETWEB TECHNOLOGIES INDIA LIMITED",
     "AXISBANK.NS"        : "AXIS BANK",
-    "ETERNAL.NS"         : "ETERNAL LIMITED"
+    "ETERNAL.NS"         : "ETERNAL LIMITED",
+    "LODHA.NS"           : "LODHA DEVELOPERS",
+    "TORNTPOWER.NS"      : "TORRENT POWER",
+    "JKCEMENT.NS"        : "JK CEMENT",
+    "COFORGE.NS"         : "COFORGE",
+    "BHEL.NS"            : "BHARAT HEAVY ELECTRICALS"
     }
 
-# NIFTY 50 Index - our benchmark
+# NIFTY 50 Index - primary benchmark (large cap)
 NIFTY = "^NSEI"
+
+# Nifty Midcap 150 - secondary benchmark
+MIDCAP = "NIFTYMIDCAP150.NS"
 
 # Data range 
 START = '2025-04-01'
-END = '2026-03-18'
+END = '2026-06-18'
 
 print("My stocks defined!")
 print(f" Tracking{len(MY_STOCKS)} stocks")
@@ -37,7 +45,7 @@ print(f" From {START} to {END}")
 print("\nDownloading data from Yahoo Finance...")
 print("Please wait - fetching real prices...")
 
-all_tickers = list(MY_STOCKS.keys()) + [NIFTY]
+all_tickers = list(MY_STOCKS.keys()) + [NIFTY] + [MIDCAP]
 
 raw_data = yf.download(
     tickers     = all_tickers,
@@ -53,8 +61,9 @@ raw_data = yf.download(
 prices = raw_data["Close"].copy()
 
 # Rename columns to readable names
-rename_map = {k: v for k,v in MY_STOCKS.items()}
-rename_map[NIFTY] = "NIFTY_50"
+rename_map = {k: v for k, v in MY_STOCKS.items()}
+rename_map[NIFTY]   = "NIFTY_50"
+rename_map[MIDCAP]  = "NIFTY_MIDCAP_150"
 prices.rename(columns=rename_map, inplace=True)
 
 print("\n Data downloaded successfully!")
@@ -96,6 +105,7 @@ print("\nCalculating returns...")
 # Separate stocks from NIFTY
 stock_names = list(MY_STOCKS.values())
 nifty_ret = daily_returns["NIFTY_50"]
+midcap_ret  = daily_returns["NIFTY_MIDCAP_150"]
 stock_ret = daily_returns[stock_names]
 
 # Cumulative return formula:
@@ -107,10 +117,11 @@ def cum_return(series):
 # Calculate for each stock and NIFTY
 port_cumret = cum_return(stock_ret.mean(axis=1))
 nifty_cumret = cum_return(nifty_ret)
+midcap_cumret = cum_return(midcap_ret)
 stock_cumret = stock_ret.apply(cum_return)
 
 # Final total revenue for each stock
-print("\nTotal returns Apr 2025 to Mar 2026:")
+print("\nTotal returns Apr 2025 to Jun 2026:")
 print("-" * 40)
 for stock in stock_names:
     total = stock_cumret[stock].iloc[-1]*100
@@ -118,7 +129,9 @@ for stock in stock_names:
     print(f"  {direction} {stock:<30} {total:+.1f}%")
 
 nifty_total = nifty_cumret.iloc[-1]*100
+midcap_total = midcap_cumret.iloc[-1] * 100
 print(f"\n BENCHMARK NIFTY 50" + " " * 11 + f"{nifty_total:+.1f}%")
+print(f" BENCHMARK NIFTY MIDCAP 150 {midcap_total:+.1f}%")
 print("-" * 40)
 
 # STEP 6 (FINAL STEP) — DRAW CHART
@@ -166,6 +179,12 @@ ax1.axvline(x=nifty_total, color=GOLD,
             linewidth=2, linestyle="--",
             label=f"NIFTY 50: {nifty_total:+.1f}%")
 
+# Midcap 150 line (new color - purple)
+PURPLE = "#a371f7"
+ax1.axvline(x=midcap_total, color=PURPLE,
+            linewidth=2, linestyle="-.",
+            label=f"NIFTY MIDCAP 150: {midcap_total:+.1f}%")
+
 ax1.set_title(CHART_TITLE, fontsize=13, pad=12)
 ax1.xaxis.set_major_formatter(mtick.PercentFormatter())
 ax1.legend(fontsize=10)
@@ -174,13 +193,14 @@ ax1.set_facecolor(BG)
 
 # CHART 2 — Line chart (the journey over time)
 line_colors = [GREEN, BLUE, GOLD, RED,
-               GRAY, "#a371f7", "#ff7b72", "#79c0ff"]
+               GRAY, "#a371f7", "#ff7b72", "#79c0ff",
+               "#f0883e", "#d2a8ff", "#7ee787", "#ffa657"]
 
 for i, stock in enumerate(stock_names):
     if stock in stock_cumret.columns:
         ax2.plot(stock_cumret.index,
                  stock_cumret[stock] * 100,
-                 color=line_colors[i],
+                 color=line_colors[i % len(line_colors)],
                  linewidth=1.8,
                  label=stock.split()[0])
 
@@ -189,6 +209,11 @@ ax2.plot(nifty_cumret.index,
          nifty_cumret * 100,
          color="white", linewidth=2.5,
          linestyle="--", label="NIFTY 50")
+
+# Nifty Midcap 150 - thick purple dot-dash
+ax2.plot(midcap_cumret.index, midcap_cumret * 100,
+         color=PURPLE, linewidth=2.5,
+         linestyle="-.", label="NIFTY MIDCAP 150")
 
 ax2.axhline(y=0, color=GRAY,
             linewidth=0.8, alpha=0.4)
@@ -208,3 +233,4 @@ plt.savefig(SAVE_FILENAME, dpi=150,
             facecolor=BG)
 plt.show()
 print(f"Chart saved as {SAVE_FILENAME}!")
+
