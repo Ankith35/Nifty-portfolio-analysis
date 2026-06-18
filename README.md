@@ -50,4 +50,4 @@ This will generate `my_portfolio_chart.png` — a 2-panel chart showing who won/
 
 ## Chart
 
-![Portfolio Chart](my_portfolio_chart.png)
+![Portfolio Chart](Portfolio_chart.png)
