@@ -144,7 +144,7 @@ GOLD   = "#d29922"   # NIFTY benchmark
 GRAY   = "#8b949e"   # secondary lines
 BG     = "#0d1117"   # background
 
-CHART_TITLE   = "My Portfolio vs NIFTY 50 — Apr 2025 to Mar 2026"
+CHART_TITLE = "My Portfolio vs NIFTY 50 — Apr 2025 to Jun 2026"
 CHART_WIDTH   = 14
 CHART_HEIGHT  = 10
 SAVE_FILENAME = "my_portfolio_chart.png"
