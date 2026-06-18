@@ -147,7 +147,7 @@ BG     = "#0d1117"   # background
 CHART_TITLE = "My Portfolio vs NIFTY 50 — Apr 2025 to Jun 2026"
 CHART_WIDTH   = 14
 CHART_HEIGHT  = 10
-SAVE_FILENAME = "my_portfolio_chart.png"
+SAVE_FILENAME = "Portfolio_chart.png"
 
 # ── Prepare data ──────────────────────────────
 returns_data = stock_cumret.iloc[-1] * 100
